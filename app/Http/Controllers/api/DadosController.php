@@ -14,12 +14,14 @@ class DadosController extends Controller
 
 }
 
-    public function index(Request $request)
+    public function index(Request $request, $start = null, $end = null)
     {
         // print_r("antes");
         $db = Dados::query()->leftJoin('informacoes_extra', 'exames.mneumonico_exame', 'informacoes_extra.codigo');
-        $url = $request->url();
+        // $url = $request->url();
         $search = $request->query('search');
+       
+
         if (empty($search) == false) {
             $db = $db->where('exames.nome_exame', 'LIKE', '%'.$search.'%')
             ->orWhere('informacoes_extra.codigosus', 'LIKE', '%'.$search.'%')
@@ -27,7 +29,7 @@ class DadosController extends Controller
         }
 
 
-        $data['clientes'] = $db->get();
+        $data['clientes'] = $db->paginate(20);
         return [$data['clientes']];
     }
 
