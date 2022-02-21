@@ -17,15 +17,21 @@ class DadosController extends Controller
     public function index(Request $request, $start = null, $end = null)
     {
         // print_r("antes");
-        $db = Dados::query()->leftJoin('informacoes_extra', 'exames.mneumonico_exame', 'informacoes_extra.codigo');
+        $db = Dados::query();
         // $url = $request->url();
         $search = $request->query('search');
-       
+        $extra = $request->query('extra');
+        if($extra == "true") {
+            $db = $db->leftJoin('informacoes_extra', 'exames.mneumonico_exame', 'informacoes_extra.codigo');
+        }
 
         if (empty($search) == false) {
             $db = $db->where('exames.nome_exame', 'LIKE', '%'.$search.'%')
-            ->orWhere('informacoes_extra.codigosus', 'LIKE', '%'.$search.'%')
             ->orWhere('exames.mneumonico_exame', 'LIKE', '%'.$search.'%');
+
+            if ($extra == "true") {
+                $db = $db->orWhere('informacoes_extra.codigosus', 'LIKE', '%'.$search.'%');
+            }
         }
 
 
